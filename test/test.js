@@ -50,17 +50,15 @@ describe('Air Con Data', function() {
     })
 
     it('should change zone status',function(){
-        return client.setZoneStatus(2,"open").then(response=>{
+        return client.setZoneTarget(2,"23").then(response=>{
             expect(response.status).to.equal(200);
         })
     })
 
     it('should get zone status',function(){
-        return client.getZoneStatus(4).then( response => {
+        return client.getZoneTarget(4).then( response => {
             console.log(`Zone is ${response}`);
-            expect(response).to.satisfy(state => {
-                return state == 'open' || state == 'closed' || state == "auto"
-            })
+            expect(response).to.be.a('number');
         })
     });
 

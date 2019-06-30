@@ -1,0 +1,21 @@
+{
+  "name": "izoneapi",
+  "version": "0.1.0",
+  "description": "An API to conect to an iZone3 airconditioning controller",
+  "main": "izone.js",
+  "scripts": {
+    "test": "mocha --report spec --timeout 10000",
+    "start": "node app.js"
+  },
+  "author": "Justin Boyd",
+  "license": "ISC",
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
+    "mocha": "^6.1.4"
+  },
+  "dependencies": {
+    "axios": "^0.19.0",
+    "request": "^2.88.0"
+  }
+}

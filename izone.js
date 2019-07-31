@@ -40,17 +40,45 @@ class Api{
         })
     }
 
-    getZoneTarget(zone){
-        return this.getZoneData(zone,'SetPoint');
+    getDuctTemp(){
+        return this._getMasterData((data) =>{
+            return data.Supply;
+        })
     }
 
+    getACTarget(){
+        return this._getMasterData((data) =>{
+            return data.Setpoint;
+        })
+    }
+
+    //sets the temperature the AC Will aim for
+    setACTarget(state)
+    {
+        var data = {"UnitSetpoint":state.toString()};
+        return this._postaxios('UnitSetpoint',data);
+    }
+
+
+    getZoneTarget(zone){
+        var temperature = this.getZoneData(zone,'SetPoint');
+        var state = this.getZoneData(zone,'Mode'); //open,close,auto
+        if(state == 'auto')
+            return temperature;
+        else
+            return state;
+    }
+
+    getZoneTargetTemperature(zone){
+        return this.getZoneData(zone,'SetPoint');
+    }
 
     //state should be avalue from 16 to 30
     //on 30 set to open, all others set to climate control
     setZoneTarget(zone,state)
     {
         var data = {"ZoneCommand":{"ZoneNo":zone.toString(),"Command":state.toString()}};
-        console.log(data);
+        //console.log(data);
         return this._postaxios('ZoneCommand',data);
     }
 
@@ -68,15 +96,44 @@ class Api{
             return Temp;
         });
     }
-    _getZoneData(zone,callback)
-    {
-        var method = 'Zones1_4';
-        if(zone > 4) method = 'Zones5_8';
 
+    setZoneState(zone,state){
+
+    }
+
+    async _getZoneData(zone,callback)
+    {
+        // console.log(`Getting Zone Data for ${zone}`);
+        var method = 'Zones1_4';
+        if(zone > 3) method = 'Zones5_8';
+        var response = await this._getaxios(method);
+        var zoneObj = response.data.find(obj => {return obj.Index === (zone);})
+        return callback(zoneObj);
+    }
+    _getMasterData(callback){
+        var method = 'SystemSettings';
         return this._getaxios(method,function(response){
-            var zoneObj = response.data.find(obj => {return obj.Index === (zone - 1);})
-            return callback(zoneObj);
+            return callback(response.data);
         });
+    }
+
+    async getActiveZones()
+    {
+        try{
+        var active_zones = [];
+        for (let index = 0; index < 8; index++) {
+            await this._getZoneData(index,function(object){
+                if(object.Type != "opcl")
+                {
+                  active_zones.push(object);
+                }
+            });
+        }
+        return active_zones;
+        }
+        catch(error){
+            console.log(error);
+        }
     }
 
     getState()
@@ -86,6 +143,25 @@ class Api{
         });
     }
 
+    async getHeaterCoolerState()
+    {
+        try{
+        var data = await this._getaxios(`SystemSettings`);
+        if (data.SysOn)
+        {
+            return data.SysMode //returning heat, cool, dry,vent,auto
+        }
+        return data.SysOn; //is returning off
+        }catch (err)
+        {
+            console.log(`ERROR: getHeaterCoolerState: ${err}`);
+            console.log(err);
+        }
+    }
 
+    async setSystemMode(mode){
+        var data = {"SystemMODE":mode};
+        return this._postaxios('SystemMODE',data);
+    }
 }
 module.exports = Api;

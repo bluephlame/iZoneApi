@@ -62,8 +62,16 @@ describe('Air Con Data', function() {
         })
     });
 
-    //  it('should toggle the A/C',function(done){
+    it('should get all zones',function(){
+        var response = client.getActiveZones();
+        response.then( response =>{
+            expect(response.length).is.eql(5);
+        })
 
+        
+    })
+
+    //  it('should toggle the A/C',function(done){
     //    return client.getState().then(response =>{
     //         var initial = response;
     //         client.toggle().then( response =>{

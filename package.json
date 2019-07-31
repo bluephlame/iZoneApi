@@ -1,11 +1,15 @@
 {
   "name": "izoneapi",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "An API to conect to an iZone3 airconditioning controller",
   "main": "izone.js",
   "scripts": {
     "test": "mocha --report spec --timeout 10000",
     "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bluephlame/iZoneApi.git"
   },
   "author": "Justin Boyd",
   "license": "ISC",
